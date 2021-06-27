@@ -142,3 +142,4 @@ cython_debug/
 
 #.vscode config
 .vscode/
+.vscode
