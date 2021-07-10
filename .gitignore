@@ -145,5 +145,4 @@ cython_debug/
 .vscode
 
 # Local
-dataset.*
-*.sql
+data/
