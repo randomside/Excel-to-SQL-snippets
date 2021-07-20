@@ -3,7 +3,6 @@ import pandas as pd
 
 dbname = 'students_performance'
 conn = sqlite3.connect(dbname + '.sqlite')
-
 chunksize = 10000
 for chunk in pd.read_csv('students_performance.csv', chunksize=chunksize):
     # replacing spaces with underscores for column names
