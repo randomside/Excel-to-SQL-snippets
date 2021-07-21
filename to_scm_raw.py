@@ -1,4 +1,7 @@
 import pandas as pd
+import warnings
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 item_master = pd.read_excel(
     r"data/item_master.xlsx", index_col=False, header=1)
@@ -72,8 +75,11 @@ xuat_ra[7] = (step_one['Account code'] == 721)
 xuat_ra[8] = (step_one['Account code'] == 803)
 
 thuyen_chuyen = [None] * 2
-thuyen_chuyen[0] = (step_one['Account code'].between(300, 400))
-thuyen_chuyen[1] = (step_one['Account code'] == 401)
+thuyen_chuyen[0] = (step_one['Account code'].between(300, 402))
+thuyen_chuyen[1] = (
+    (step_one['Account code'] == 555) & (step_one['Material Type'] == 'ROH') &
+    (step_one['Procurement'].isin(['F', 'X']))
+)
 
 
 def condition_to_data(arr):
@@ -144,7 +150,7 @@ xuat_ra[2] = (
 
 thuyen_chuyen = [None]
 thuyen_chuyen[0] = (
-    (step_one['Account code'].between(300, 402)) &
+    (step_one['Account code'].between(300, 402) | step_one['Account code'].isin([555])) &
     (step_one['Material Type'] == 'HALB') &
     (step_one['Procurement'].isin(['E', 'X']))
 )
@@ -191,7 +197,7 @@ xuat_ra[1] = (
 
 thuyen_chuyen = [None]
 thuyen_chuyen[0] = (
-    (step_one['Account code'].between(300, 402)) &
+    (step_one['Account code'].between(300, 402) | step_one['Account code'].isin([555])) &
     (step_one['Material Type'] == 'FERT') &
     (step_one['Procurement'].isin(['E', 'X']))
 )
@@ -212,3 +218,40 @@ with pd.ExcelWriter('output/before_report.xlsx') as writer:
     SCM_WIP.to_excel(writer, sheet_name='WIP')
 
 print('DONE IT')
+
+
+def get_result(df):
+    result = df.pivot(index=["Unnamed: 0", "Material"],
+                      columns="Account code", values="Quantity")
+    result.reset_index(inplace=True)
+    del result['Unnamed: 0']
+    aggregation_functions = {}
+    columns_order = [101, 102, 321, 343, 401,
+                     720, 201, 261, 344, 555, 601, 609, 721]
+    for column in result.columns:
+        if isinstance(column, int):
+            aggregation_functions[column] = 'sum'
+
+    final_col = []
+    for col in columns_order:
+        if col in result.columns:
+            final_col.append(col)
+
+    result = result.groupby(result['Material']).aggregate(
+        aggregation_functions)
+    result = result[final_col]
+    result.reset_index(inplace=True)
+    result.index.name = None
+    return result
+
+
+RAW_REPORT = get_result(SCM_RAW)
+WIP_REPORT = get_result(SCM_WIP)
+FG_REPORT = get_result(SCM_FG)
+
+with pd.ExcelWriter('output/final_result.xlsx') as writer:
+    RAW_REPORT.to_excel(writer, sheet_name='REPORT_RAW')
+    WIP_REPORT.to_excel(writer, sheet_name='REPORT_FG')
+    FG_REPORT.to_excel(writer, sheet_name='REPORT_WIP')
+
+print('DONE')

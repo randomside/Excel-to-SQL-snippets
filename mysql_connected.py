@@ -9,7 +9,7 @@ def import_to_data_csv(file_name):
                      header=0)  # Read data start from row 2
 
     sql_engine = create_engine(
-        'mysql+pymysql://root:110996@127.0.0.1/byun', pool_recycle=3600
+        'mysql+pymysql://root:110996@127.0.0.1/unicus', pool_recycle=3600
     )
     dbConnection = sql_engine.connect()
 
