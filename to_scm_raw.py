@@ -10,6 +10,9 @@ material_history = pd.read_excel(
 
 temp_item_master = item_master[['Material', 'Material Type', 'Procurement']]
 
+'''
+PREPARE FOR STEP ONE
+'''
 step_one = pd.merge(material_history, temp_item_master,
                     on="Material", how="left")
 
@@ -43,8 +46,6 @@ cols = step_one.columns.tolist()
 cols = cols[:7] + [cols[-1]] + cols[7: -1]
 step_one = step_one[cols]
 
-step_one.to_excel("output/SCM_RAW.xlsx")
-
 columns_name = {
     'H': 'Account code',
     'p': 'Order Category',
@@ -52,6 +53,9 @@ columns_name = {
     'X': 'Procurement'
 }
 
+'''
+Conditions to insert into RAW, WIM, FG
+'''
 nhap_vao = [None] * 7
 nhap_vao[0] = ((step_one['Account code'] == 101) & (
     step_one['Order Category'] == 'Purchase Order'))
@@ -88,7 +92,8 @@ def condition_to_data(arr):
         zip(material_type_order, range(len(material_type_order))))
     for i in range(len(arr)):
         arr[i] = step_one.loc[arr[i]]
-        arr[i]['Tm_Rank'] = arr[i]['Material Type'].map(material_order_index)
+        arr[i]['Tm_Rank'] = arr[i]['Material Type'].map(
+            material_order_index)  # Sort rows base on material_type_order
         arr[i].sort_values(['Tm_Rank', 'Procurement'], inplace=True)
         arr[i].drop('Tm_Rank', 1, inplace=True)
 
@@ -208,19 +213,16 @@ condition_to_data(thuyen_chuyen)
 
 SCM_FG = pd.concat(nhap_vao + xuat_ra + thuyen_chuyen)
 
-print('RAW', SCM_RAW.shape)
-print('FG', SCM_FG.shape)
-print('WIP', SCM_WIP.shape)
-
 with pd.ExcelWriter('output/before_report.xlsx') as writer:
     SCM_RAW.to_excel(writer, sheet_name='RAW')
     SCM_FG.to_excel(writer, sheet_name='FG')
     SCM_WIP.to_excel(writer, sheet_name='WIP')
 
-print('DONE IT')
-
 
 def get_result(df):
+    '''
+    Convert to final report, columns base on Account Code
+    '''
     result = df.pivot(index=["Unnamed: 0", "Material"],
                       columns="Account code", values="Quantity")
     result.reset_index(inplace=True)
