@@ -60,23 +60,25 @@ nhap_vao = [None] * 7
 nhap_vao[0] = ((step_one['Account code'] == 101) & (
     step_one['Order Category'] == 'Purchase Order'))
 nhap_vao[1] = (step_one['Account code'] == 602)
+nhap_vao[1] = (step_one['Account code'] == 610)
 nhap_vao[2] = (step_one['Account code'] == 623)
 nhap_vao[3] = (step_one['Account code'] == 701)
 nhap_vao[4] = (step_one['Account code'] == 720)
 nhap_vao[5] = (step_one['Account code'] == 801)
 nhap_vao[6] = (step_one['Account code'] == 809)
 
-xuat_ra = [None] * 9
+xuat_ra = [None] * 10
 xuat_ra[0] = ((step_one['Account code'] == 102) & (
     step_one['Order Category'] == 'Purchase Order'))
 xuat_ra[1] = (step_one['Account code'] == 201)
 xuat_ra[2] = (step_one['Account code'] == 261)
-xuat_ra[3] = (step_one['Account code'] == 601)
-xuat_ra[4] = (step_one['Account code'] == 609)
-xuat_ra[5] = (step_one['Account code'] == 702)
-xuat_ra[6] = (step_one['Account code'] == 712)
-xuat_ra[7] = (step_one['Account code'] == 721)
-xuat_ra[8] = (step_one['Account code'] == 803)
+xuat_ra[3] = (step_one['Account code'] == 555)
+xuat_ra[4] = (step_one['Account code'] == 601)
+xuat_ra[5] = (step_one['Account code'] == 609)
+xuat_ra[6] = (step_one['Account code'] == 702)
+xuat_ra[7] = (step_one['Account code'] == 712)
+xuat_ra[8] = (step_one['Account code'] == 721)
+xuat_ra[9] = (step_one['Account code'] == 803)
 
 thuyen_chuyen = [None] * 2
 thuyen_chuyen[0] = (step_one['Account code'].between(300, 402))
@@ -113,18 +115,18 @@ condition_to_delete = ~(step_two['Account code'].isin([101, 102])) & (
 )
 step_two.drop(step_two[condition_to_delete].index, inplace=True)
 
-SCM_RAW = step_two
+SCM_RAW = step_two  # Get SCM_RAW
 
 nhap_vao = [None] * 2
 nhap_vao[0] = (
     (step_one['Account code'] == 101) &
-    (step_one['Order Category'] == 'Purchase Order') &
+    (step_one['Order Category'] == 'Production Order') &
     (step_one['Material Type'] == 'HALB') &
     (step_one['Procurement'].isin(['E', 'X']))
 )
 
 nhap_vao[1] = (
-    (step_one['Account code'].isin([602, 623, 701, 720, 801, 809])) &
+    (step_one['Account code'].isin([602, 610, 623, 701, 720, 801, 809])) &
     (step_one['Material Type'] == 'HALB') &
     (step_one['Procurement'].isin(['E', 'X']))
 )
@@ -132,13 +134,13 @@ nhap_vao[1] = (
 xuat_ra = [None] * 3
 xuat_ra[0] = (
     (step_one['Account code'] == 102) &
-    (step_one['Order Category'] == 'Purchase Order') &
+    (step_one['Order Category'] == 'Production order') &
     (step_one['Material Type'] == 'HALB') &
     (step_one['Procurement'].isin(['E', 'X']))
 )
 
 xuat_ra[1] = (
-    (step_one['Account code'].isin([201, 601, 609, 702, 712, 721, 803])) &
+    (step_one['Account code'].isin([201, 555, 601, 609, 702, 712, 721, 803])) &
     (step_one['Material Type'] == 'HALB') &
     (step_one['Procurement'].isin(['E', 'X']))
 )
@@ -155,7 +157,7 @@ xuat_ra[2] = (
 
 thuyen_chuyen = [None]
 thuyen_chuyen[0] = (
-    (step_one['Account code'].between(300, 402) | step_one['Account code'].isin([555])) &
+    (step_one['Account code'].between(300, 402)) &
     (step_one['Material Type'] == 'HALB') &
     (step_one['Procurement'].isin(['E', 'X']))
 )
@@ -166,11 +168,11 @@ condition_to_data(thuyen_chuyen)
 
 SCM_WIP = pd.concat(nhap_vao + xuat_ra + thuyen_chuyen)
 
-SCM_WIP.loc[(
-    (SCM_WIP['Account code'] == 261) &
-    (SCM_WIP['Material Type'] == 'FERT') &
-    (SCM_WIP['Location'].str.startswith('RW'))
-), 'Location'] = None
+# SCM_WIP.loc[(
+#     (SCM_WIP['Account code'] == 261) &
+#     (SCM_WIP['Material Type'] == 'FERT') &
+#     (SCM_WIP['Location'].str.startswith('RW'))
+# ), 'Location'] = None
 
 nhap_vao = [None] * 2
 nhap_vao[0] = (
