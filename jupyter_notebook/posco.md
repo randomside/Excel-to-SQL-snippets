@@ -14,4 +14,4 @@ Input files:
   A42: 'Re-Purpose',
   )
 - 'Begin' column: pending...
-- 'Output for Production', 'Warehouse' and 'Return' columns from sum of 'Weight' column in 'takeout.xlsx', 'iob.xlsx' and 'return.xlsx' ('Warehouse' taken from 'Closing Balance')
+- 'Output for Production', 'Warehouse' and 'Return' columns from sum of 'Weight' column in 'takeout.xlsx', 'iob.xlsx' and 'return.xlsx' ('Warehouse' taken from 'Closing Balance') (If 'Unit' is 'KG' take 'Weight' else take 'Qty')
