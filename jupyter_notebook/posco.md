@@ -15,3 +15,14 @@ Input files:
   )
 - 'Begin' column: pending...
 - 'Output for Production', 'Warehouse' and 'Return' columns from sum of 'Weight' column in 'takeout.xlsx', 'iob.xlsx' and 'return.xlsx' ('Warehouse' taken from 'Closing Balance') (If 'Unit' is 'KG' take 'Weight' else take 'Qty')
+
+
+## Final goal
+  1. result by period(Monthly, Quarterly, Half year, year) and type(E21, E31);
+  - same as Excel balance sheet;
+  - the begin of each period result change as last period balance
+  2. Find reason if Ecus balance coulum is minus(-) value;
+  - Normally miss imput from DO table, A12 in EXIM, etc  ;
+  3. Discrepancy between table;
+  - for exemple, import Qty in EXIM but not Take-in;
+  - for exemple, Different Qty between table( 100 in take-in but 50 in EXIM);
